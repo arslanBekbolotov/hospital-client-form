@@ -6,14 +6,14 @@
     </label>
     <input
       :id="inputId"
-      :type="type"
+      type="tel"
       v-model.trim="localValue"
       :placeholder="placeholder"
       @blur="updateValue"
+      maxlength="11"
       @focus="$v.localValue.$reset()"
       :class="{ 'form-input__field--invalid': $v.localValue.error }"
       class="form-input__field"
-      :max="getNowDate()"
     />
     <span
       v-if="$v.localValue.$dirty && !$v.localValue.required"
@@ -21,11 +21,23 @@
     >
       {{ errorMessage }}
     </span>
+    <span
+      v-if="$v.localValue.$dirty && !$v.localValue.minLength"
+      class="form-input__error"
+    >
+      Номер должен состоять из 11 цифр
+    </span>
+    <span
+      v-if="$v.localValue.$dirty && !$v.localValue.validPhone"
+      class="form-input__error"
+    >
+      Номер должен начинаться с цифры 7 (формат записи: 7123456789)
+    </span>
   </div>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
   props: {
@@ -36,10 +48,6 @@ export default {
     name: {
       type: String,
       required: true,
-    },
-    type: {
-      type: String,
-      default: "text",
     },
     placeholder: {
       type: String,
@@ -63,20 +71,14 @@ export default {
   validations: {
     localValue: {
       required,
+      minLength: minLength(11),
+      validPhone: (val) => /^7\d{10}$/.test(val),
     },
   },
   methods: {
     updateValue() {
       this.$v.localValue.$touch();
       this.$emit("blur", this.name, this.localValue);
-    },
-
-    getNowDate() {
-      const date = new Date();
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}-${String(date.getDate()).padStart(2, "0")}`;
     },
   },
 };
