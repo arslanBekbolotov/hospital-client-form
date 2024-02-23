@@ -1,26 +1,29 @@
 <template>
-  <div class="custom-dropdown">
-    <label :for="inputId" class="custom-dropdown__label">
+  <div class="multi-select-dropdown">
+    <label :for="inputId" class="multi-select-dropdown__label">
       {{ label }}
-      <span v-if="isRequired" class="custom-dropdown__star">*</span>
+      <span v-if="isRequired" class="multi-select-dropdown__star">*</span>
     </label>
-    <div class="custom-dropdown__wrapper" @click="toggleDropdown">
-      <div class="custom-dropdown__selected" :class="{ 'is-open': isOpen }">
-        {{ selectedValue.label || defaultValue || "Выберите..." }}
+    <div class="multi-select-dropdown__wrapper" @click="toggleDropdown">
+      <div
+        class="multi-select-dropdown__selected"
+        :class="{ 'is-open': isOpen }"
+      >
+        {{ getSelectedLabels() || defaultValue }}
       </div>
-      <div v-show="isOpen" class="custom-dropdown__options">
+      <div v-show="isOpen" class="multi-select-dropdown__options">
         <div
           v-for="(option, index) in options"
           :key="index"
-          @click="selectOption(option)"
+          @click="changeOption(option)"
         >
           {{ option.label }}
         </div>
       </div>
     </div>
     <span
-      v-if="$v.selectedValue.$dirty && !$v.selectedValue.required"
-      class="custom-dropdown__error"
+      v-if="$v.selectedOptions.$dirty && !$v.selectedOptions.required"
+      class="multi-select-dropdown__error"
     >
       {{ errorMessage }}
     </span>
@@ -46,7 +49,7 @@ export default {
     },
     defaultValue: {
       type: String,
-      required: true,
+      default: "Выберите...",
     },
     errorMessage: {
       type: String,
@@ -59,13 +62,13 @@ export default {
   },
   data() {
     return {
-      inputId: `dropdownId ${Date.now() + Math.random()}`,
-      selectedValue: this.options,
+      inputId: `multiSelectId ${Date.now() + Math.random()}`,
+      selectedOptions: [],
       isOpen: false,
     };
   },
   validations: {
-    selectedValue: {
+    selectedOptions: {
       required,
     },
   },
@@ -73,18 +76,28 @@ export default {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
     },
-    selectOption(option) {
-      this.selectedValue = option;
-      this.isOpen = false;
-      this.$emit("change", this.name, option);
-      this.isOpen = true;
+    changeOption(option) {
+      const index = this.selectedOptions.findIndex(
+        (selectedOption) => selectedOption.value === option.value
+      );
+
+      if (index === -1) {
+        this.selectedOptions.push(option);
+      } else {
+        this.selectedOptions.splice(index, 1);
+      }
+
+      this.$emit("change", this.name, this.selectedOptions);
+    },
+    getSelectedLabels() {
+      return this.selectedOptions.map((option) => option.label).join(", ");
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.custom-dropdown {
+.multi-select-dropdown {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -132,12 +145,12 @@ export default {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     box-sizing: border-box;
+    text-align: center;
     z-index: 1;
 
     div {
       padding: 10px;
       cursor: pointer;
-      transition: background-color 0.3s;
 
       &:hover {
         background-color: #f2f2f2;

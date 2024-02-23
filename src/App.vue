@@ -14,12 +14,21 @@
       name="birthdate"
       :is-required="true"
     />
-    <phone-input name="phone" label="Номер телефона" />
+    <phone-input name="phone" label="Номер телефона" :is-required="true" />
     <form-select
       default-value="Выберите..."
       :options="doctors"
       name="selectedDoctor"
       label="Лечащий врач"
+      @change="updateParentValue"
+      :is-required="true"
+    />
+    <form-multiple-select
+      default-value="Выберите..."
+      :options="groups"
+      name="selectedGroups"
+      label="Группа клиентов"
+      :is-required="true"
       @change="updateParentValue"
     />
   </div>
@@ -29,10 +38,11 @@
 import FormInput from "@/components/UI/FormInput.vue";
 import PhoneInput from "@/components/PhoneInput.vue";
 import FormSelect from "@/components/UI/FormSelect.vue";
+import FormMultipleSelect from "@/components/UI/FormMultipleSelect.vue";
 
 export default {
   name: "App",
-  components: { FormSelect, PhoneInput, FormInput },
+  components: { FormMultipleSelect, FormSelect, PhoneInput, FormInput },
   data() {
     return {
       name: "",
