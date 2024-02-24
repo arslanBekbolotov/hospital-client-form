@@ -1,4 +1,9 @@
-# hospital-client-form
+# Форма Создания Клиента
+
+Используемые технологии:
+• Vue.js (Vue2)
+• Vuelidate
+• Scss
 
 ## Project setup
 ```
@@ -19,6 +24,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
