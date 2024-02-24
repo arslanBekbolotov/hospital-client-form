@@ -12,27 +12,22 @@
       @blur="updateValue"
       maxlength="11"
       @focus="$v.localValue.$reset()"
-      :class="{ 'form-input__field--invalid': $v.localValue.error }"
-      class="form-input__field"
+      :class="{
+        'form-input__field': true,
+        'form-input__field--invalid': $v.localValue.$error,
+      }"
     />
-    <span
-      v-if="$v.localValue.$dirty && !$v.localValue.required"
-      class="form-input__error"
-    >
-      {{ errorMessage }}
-    </span>
-    <span
-      v-if="$v.localValue.$dirty && !$v.localValue.minLength"
-      class="form-input__error"
-    >
-      Номер должен состоять из 11 цифр
-    </span>
-    <span
-      v-if="$v.localValue.$dirty && !$v.localValue.validPhone"
-      class="form-input__error"
-    >
-      Номер должен начинаться с цифры 7 (формат записи: 7123456789)
-    </span>
+    <div class="form-input__error">
+      <div v-if="$v.localValue.$dirty && !$v.localValue.required">
+        {{ errorMessage }}
+      </div>
+      <div v-if="$v.localValue.$dirty && !$v.localValue.minLength">
+        Номер должен состоять из 11 цифр
+      </div>
+      <div v-if="$v.localValue.$dirty && !$v.localValue.validPhone">
+        Номер должен начинаться с цифры 7 (формат записи: 7123456789)
+      </div>
+    </div>
   </div>
 </template>
 
@@ -89,6 +84,7 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  width: 100%;
 
   .form-input__label {
     font-weight: bold;
@@ -112,6 +108,7 @@ export default {
   }
 
   .form-input__error {
+    text-align: start;
     color: red;
   }
 }

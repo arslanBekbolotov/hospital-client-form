@@ -6,7 +6,7 @@
     </label>
     <div class="custom-dropdown__wrapper" @click="toggleDropdown">
       <div class="custom-dropdown__selected" :class="{ 'is-open': isOpen }">
-        {{ selectedValue.label || defaultValue || "Выберите..." }}
+        {{ selectedValue.label || startValue }}
       </div>
       <div v-show="isOpen" class="custom-dropdown__options">
         <div
@@ -44,9 +44,9 @@ export default {
       type: Array,
       required: true,
     },
-    defaultValue: {
+    startValue: {
       type: String,
-      required: true,
+      default: "Выберите...",
     },
     errorMessage: {
       type: String,
@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       inputId: `dropdownId ${Date.now() + Math.random()}`,
-      selectedValue: this.options,
+      selectedValue: "",
       isOpen: false,
     };
   },
@@ -72,13 +72,21 @@ export default {
   methods: {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
+      this.$v.selectedValue.$touch();
     },
     selectOption(option) {
       this.selectedValue = option;
       this.isOpen = false;
       this.$emit("change", this.name, option);
-      this.isOpen = true;
     },
+  },
+  created() {
+    const onClickOutside = (e) =>
+      (this.isOpen = this.$el.contains(e.target) && this.isOpen);
+    document.addEventListener("click", onClickOutside);
+    this.$on("hook:beforeDestroy", () =>
+      document.removeEventListener("click", onClickOutside)
+    );
   },
 };
 </script>
@@ -103,14 +111,14 @@ export default {
     display: inline-block;
     width: 100%;
     cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 10px;
   }
 
   &__selected {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
     position: relative;
 
     &.is-open {
@@ -128,11 +136,9 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     border: 1px solid #ccc;
-    border-top: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    box-sizing: border-box;
     z-index: 1;
+    border-radius: 5px;
+    box-sizing: border-box;
 
     div {
       padding: 10px;

@@ -11,8 +11,10 @@
       :placeholder="placeholder"
       @blur="updateValue"
       @focus="$v.localValue.$reset()"
-      :class="{ 'form-input__field--invalid': $v.localValue.error }"
-      class="form-input__field"
+      :class="{
+        'form-input__field': true,
+        'form-input__field--invalid': $v.localValue.$error,
+      }"
       :max="getNowDate()"
     />
     <span
@@ -68,7 +70,7 @@ export default {
   methods: {
     updateValue() {
       this.$v.localValue.$touch();
-      this.$emit("blur", this.name, this.localValue);
+      this.$emit("input", this.name, this.localValue);
     },
 
     getNowDate() {

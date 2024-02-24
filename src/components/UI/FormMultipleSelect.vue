@@ -75,6 +75,7 @@ export default {
   methods: {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
+      this.$v.selectedOptions.$touch();
     },
     changeOption(option) {
       const index = this.selectedOptions.findIndex(
@@ -93,6 +94,14 @@ export default {
       return this.selectedOptions.map((option) => option.label).join(", ");
     },
   },
+  created() {
+    const onClickOutside = (e) =>
+      (this.isOpen = this.$el.contains(e.target) && this.isOpen);
+    document.addEventListener("click", onClickOutside);
+    this.$on("hook:beforeDestroy", () =>
+      document.removeEventListener("click", onClickOutside)
+    );
+  },
 };
 </script>
 
@@ -101,6 +110,7 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  min-width: 300px;
 
   &__label {
     font-weight: bold;
@@ -116,15 +126,17 @@ export default {
     display: inline-block;
     width: 100%;
     cursor: pointer;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
   }
 
   &__selected {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     box-sizing: border-box;
     position: relative;
+    z-index: 1;
 
     &.is-open {
       border-bottom-left-radius: 0;
@@ -140,13 +152,11 @@ export default {
     width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    box-sizing: border-box;
     text-align: center;
     z-index: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
 
     div {
       padding: 10px;
