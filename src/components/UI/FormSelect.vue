@@ -94,6 +94,7 @@ export default {
   align-items: flex-start;
   flex-direction: column;
   font-weight: bold;
+  width: 100%;
 
   &__label {
     margin-bottom: 5px;

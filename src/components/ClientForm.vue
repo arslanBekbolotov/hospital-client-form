@@ -251,7 +251,7 @@ export default {
 .main-form,
 .address-form,
 .passport-form {
-  min-width: 300px;
+  min-width: 280px;
   background: #82b3f3;
   width: 30%;
   border: 1px solid #ccc;
@@ -261,12 +261,5 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   row-gap: 10px;
-}
-
-.form-button {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 </style>

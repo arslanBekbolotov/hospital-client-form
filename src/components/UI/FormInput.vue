@@ -84,14 +84,14 @@ export default {
   align-items: flex-start;
   flex-direction: column;
   font-weight: bold;
-
+  width: 100%;
   .form-input__star {
     color: red;
   }
 
   .form-input__field {
-    width: 100%;
     padding: 10px;
+    width: 100%;
     margin: 5px 0 10px;
     border: 1px solid #ccc;
     border-radius: 5px;

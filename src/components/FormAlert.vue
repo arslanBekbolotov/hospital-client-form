@@ -34,8 +34,10 @@ export default {
   opacity: 0;
   transition: opacity 1s ease-in-out;
   background-color: #4caf50;
-  top: 20px;
-  right: 20px;
+  width: 90%;
+  max-width: 400px;
+  top: 1%;
+  right: 1%;
   font-size: 18px;
   font-weight: bold;
   color: #fff;

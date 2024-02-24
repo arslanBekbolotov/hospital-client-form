@@ -107,8 +107,9 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  min-width: 300px;
+  min-width: 280px;
   font-weight: bold;
+  width: 100%;
 
   &__label {
     margin-bottom: 5px;
