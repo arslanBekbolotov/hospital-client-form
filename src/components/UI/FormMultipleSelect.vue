@@ -22,8 +22,10 @@
       </div>
     </div>
     <span
-      v-if="$v.selectedOptions.$dirty && !$v.selectedOptions.required"
-      class="multi-select-dropdown__error"
+      :class="[
+        'multi-select-dropdown__error',
+        { visible: validation?.[name]?.$error },
+      ]"
     >
       {{ errorMessage }}
     </span>
@@ -31,8 +33,6 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-
 export default {
   props: {
     label: {
@@ -53,11 +53,14 @@ export default {
     },
     errorMessage: {
       type: String,
-      default: "Пожалуйста, выберите значение",
+      default: "Это поле обязательное, выберите значение",
     },
     isRequired: {
       type: Boolean,
       default: false,
+    },
+    validation: {
+      type: Object,
     },
   },
   data() {
@@ -67,15 +70,9 @@ export default {
       isOpen: false,
     };
   },
-  validations: {
-    selectedOptions: {
-      required,
-    },
-  },
   methods: {
     toggleDropdown() {
       this.isOpen = !this.isOpen;
-      this.$v.selectedOptions.$touch();
     },
     changeOption(option) {
       const index = this.selectedOptions.findIndex(
@@ -111,9 +108,9 @@ export default {
   align-items: flex-start;
   flex-direction: column;
   min-width: 300px;
+  font-weight: bold;
 
   &__label {
-    font-weight: bold;
     margin-bottom: 5px;
   }
 
@@ -129,6 +126,7 @@ export default {
     background: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
+    color: #000;
   }
 
   &__selected {
@@ -171,7 +169,16 @@ export default {
 
   &__error {
     color: red;
+    text-align: start;
     margin-top: 5px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 </style>

@@ -10,16 +10,15 @@
       v-model.trim="localValue"
       :placeholder="placeholder"
       @blur="updateValue"
-      @focus="$v.localValue.$reset()"
+      @focus="validation?.[name]?.$reset()"
       :class="{
         'form-input__field': true,
-        'form-input__field--invalid': $v.localValue.$error,
+        'form-input__field--invalid': validation?.[name]?.$error,
       }"
       :max="getNowDate()"
     />
     <span
-      v-if="$v.localValue.$dirty && !$v.localValue.required"
-      class="form-input__error"
+      :class="['form-input__error', { visible: validation?.[name]?.$error }]"
     >
       {{ errorMessage }}
     </span>
@@ -27,8 +26,6 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-
 export default {
   props: {
     label: {
@@ -53,7 +50,10 @@ export default {
     },
     errorMessage: {
       type: String,
-      default: "Пожалуйста введите корректное значение",
+      default: "Это поле обязательное",
+    },
+    validation: {
+      type: Object,
     },
   },
   data() {
@@ -62,14 +62,8 @@ export default {
       inputId: `inputId ${Date.now() + Math.random()}`,
     };
   },
-  validations: {
-    localValue: {
-      required,
-    },
-  },
   methods: {
     updateValue() {
-      this.$v.localValue.$touch();
       this.$emit("input", this.name, this.localValue);
     },
 
@@ -89,10 +83,7 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-
-  .form-input__label {
-    font-weight: bold;
-  }
+  font-weight: bold;
 
   .form-input__star {
     color: red;
@@ -107,12 +98,20 @@ export default {
     box-sizing: border-box;
 
     &--invalid {
-      border-color: red;
+      border: 1px solid red;
     }
   }
 
   .form-input__error {
     color: red;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 </style>

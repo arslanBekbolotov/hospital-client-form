@@ -1,27 +1,36 @@
 <template>
-  <form class="form">
-    <div class="main-form">
-      <form-input
-        label="Имя"
-        :is-required="true"
-        name="name"
-        @input="updateParentValue"
-      />
-      <form-input
-        label="Фамилия"
-        :is-required="true"
-        name="lastname"
-        @input="updateParentValue"
-      />
-      <form-input
-        label="Дата рождения"
-        @blur="updateParentValue"
-        type="date"
-        name="birthdate"
-        :is-required="true"
-      />
-      <phone-input name="phone" label="Номер телефона" :is-required="true" />
-      <div class="main-form__row">
+  <form class="form" @submit.prevent="checkResult">
+    <div class="form-content">
+      <div class="main-form">
+        <form-input
+          label="Имя"
+          :is-required="true"
+          name="name"
+          @input="updateParentValue"
+          :validation="$v"
+        />
+        <form-input
+          label="Фамилия"
+          :is-required="true"
+          name="lastname"
+          @input="updateParentValue"
+          :validation="$v"
+        />
+        <form-input
+          label="Дата рождения"
+          :is-required="true"
+          type="date"
+          name="birthdate"
+          @input="updateParentValue"
+          :validation="$v"
+        />
+        <phone-input
+          name="phone"
+          label="Номер телефона"
+          :is-required="true"
+          :validation="$v"
+          @blur="updateParentValue"
+        />
         <radio-input
           :options="genderOption"
           @change="updateParentValue"
@@ -34,56 +43,62 @@
           label="Группа клиентов"
           :is-required="true"
           @change="updateParentValue"
+          :validation="$v"
+        />
+        <form-select
+          :options="doctors"
+          name="selectedDoctor"
+          label="Лечащий врач"
+          @change="updateParentValue"
+          :validation="$v"
+        />
+        <form-check
+          @change="updateParentValue"
+          name="agreeWithSendSms"
+          label="Не отправлять СМС"
         />
       </div>
-      <form-select
-        :options="doctors"
-        name="selectedDoctor"
-        label="Лечащий врач"
-        @change="updateParentValue"
-      />
-      <form-check
-        @change="updateParentValue"
-        name="agreeWithSendSms"
-        label="Не отправлять СМС"
-      />
+      <div class="address-form">
+        <form-input
+          label="Город"
+          :is-required="true"
+          name="city"
+          @input="updateParentValue"
+          :validation="$v"
+        />
+        <form-input label="Индекс" name="postcode" @input="updateParentValue" />
+        <form-input label="Страна" name="country" @input="updateParentValue" />
+        <form-input label="Область" name="region" @input="updateParentValue" />
+        <form-input label="Улица" name="street" @input="updateParentValue" />
+        <form-input label="Дом" name="home" @input="updateParentValue" />
+      </div>
+      <div class="passport-form">
+        <form-select
+          :is-required="true"
+          :options="documents"
+          name="selectedDocument"
+          label="Тип документа"
+          @change="updateParentValue"
+          :validation="$v"
+        />
+        <form-input label="Серия" name="serial" @input="updateParentValue" />
+        <form-input label="Номер" name="number" @input="updateParentValue" />
+        <form-input
+          label="Кем выдан"
+          name="issuedBy"
+          @input="updateParentValue"
+        />
+        <form-input
+          label="Дата выдачи"
+          :is-required="true"
+          type="date"
+          name="dateOfIssue"
+          @input="updateParentValue"
+          :validation="$v"
+        />
+      </div>
     </div>
-    <div class="address-form">
-      <form-input
-        label="Город"
-        :is-required="true"
-        name="city"
-        @input="updateParentValue"
-      />
-      <form-input label="Индекс" name="postcode" @input="updateParentValue" />
-      <form-input label="Страна" name="country" @input="updateParentValue" />
-      <form-input label="Область" name="region" @input="updateParentValue" />
-      <form-input label="Улица" name="street" @input="updateParentValue" />
-      <form-input label="Дом" name="home" @input="updateParentValue" />
-    </div>
-    <div class="passport-form">
-      <form-select
-        :is-required="true"
-        :options="documents"
-        name="selectedDocument"
-        label="Тип документа"
-        @change="updateParentValue"
-      />
-      <form-input label="Серия" name="serial" @input="updateParentValue" />
-      <form-input label="Номер" name="number" @input="updateParentValue" />
-      <form-input
-        label="Кем выдан"
-        name="issuedBy"
-        @input="updateParentValue"
-      />
-      <form-input
-        label="Дата выдачи"
-        :is-required="true"
-        type="date"
-        name="dateOfIssue"
-        @input="updateParentValue"
-      />
-    </div>
+    <form-button button-text="Создать" />
   </form>
 </template>
 
@@ -94,10 +109,13 @@ import FormSelect from "@/components/UI/FormSelect.vue";
 import FormMultipleSelect from "@/components/UI/FormMultipleSelect.vue";
 import FormCheck from "@/components/UI/FormCheck.vue";
 import RadioInput from "@/components/UI/RadioInput.vue";
+import { required, minLength } from "vuelidate/lib/validators";
+import FormButton from "@/components/UI/FormButton.vue";
 
 export default {
   name: "App",
   components: {
+    FormButton,
     RadioInput,
     FormCheck,
     FormMultipleSelect,
@@ -175,28 +193,50 @@ export default {
       successMsg: false,
     };
   },
+  validations: {
+    name: { required },
+    lastname: { required },
+    birthdate: { required },
+    phone: {
+      required,
+      minLength: minLength(11),
+      validPhone: (val) => /^7\d{10}$/.test(val),
+    },
+    selectedGroups: { required },
+    city: { required },
+    selectedDocument: { required },
+    dateOfIssue: { required },
+  },
   methods: {
     updateParentValue(name, newValue) {
       this[name] = newValue;
+    },
+    checkResult() {
+      this.$v.$touch();
+      if (!this.$v.$error) {
+        alert("Валидация прошла успешно");
+        this.successMsg = true;
+      }
     },
   },
 };
 </script>
 
 <style lang="scss">
-.form {
+.form-content {
   display: flex;
   align-items: flex-start;
   justify-content: space-evenly;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .main-form,
 .address-form,
 .passport-form {
   min-width: 300px;
-  background: #eee;
+  background: #82b3f3;
   width: 30%;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -205,15 +245,5 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   row-gap: 10px;
-}
-
-.main-form {
-  &__row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    column-gap: 20px;
-    flex-wrap: wrap;
-  }
 }
 </style>

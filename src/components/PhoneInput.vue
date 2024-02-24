@@ -11,20 +11,22 @@
       :placeholder="placeholder"
       @blur="updateValue"
       maxlength="11"
-      @focus="$v.localValue.$reset()"
+      @focus="validation?.[name]?.$reset()"
       :class="{
         'form-input__field': true,
-        'form-input__field--invalid': $v.localValue.$error,
+        'form-input__field--invalid': validation?.[name]?.$error,
       }"
     />
-    <div class="form-input__error">
-      <div v-if="$v.localValue.$dirty && !$v.localValue.required">
+    <div
+      :class="['form-input__error', { visible: validation?.[name]?.$error }]"
+    >
+      <div v-if="validation?.[name]?.$dirty && !validation?.[name]?.required">
         {{ errorMessage }}
       </div>
-      <div v-if="$v.localValue.$dirty && !$v.localValue.minLength">
+      <div v-if="validation?.[name]?.$dirty && !validation?.[name]?.minLength">
         Номер должен состоять из 11 цифр
       </div>
-      <div v-if="$v.localValue.$dirty && !$v.localValue.validPhone">
+      <div v-if="validation?.[name]?.$dirty && !validation?.[name]?.validPhone">
         Номер должен начинаться с цифры 7 (формат записи: 7123456789)
       </div>
     </div>
@@ -32,8 +34,6 @@
 </template>
 
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
-
 export default {
   props: {
     label: {
@@ -54,7 +54,10 @@ export default {
     },
     errorMessage: {
       type: String,
-      default: "Пожалуйста введите корректное значение",
+      default: "Это поле обязательное",
+    },
+    validation: {
+      type: Object,
     },
   },
   data() {
@@ -63,16 +66,8 @@ export default {
       inputId: `inputId ${Date.now() + Math.random()}`,
     };
   },
-  validations: {
-    localValue: {
-      required,
-      minLength: minLength(11),
-      validPhone: (val) => /^7\d{10}$/.test(val),
-    },
-  },
   methods: {
     updateValue() {
-      this.$v.localValue.$touch();
       this.$emit("blur", this.name, this.localValue);
     },
   },
@@ -84,11 +79,8 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  font-weight: bold;
   width: 100%;
-
-  .form-input__label {
-    font-weight: bold;
-  }
 
   .form-input__star {
     color: red;
@@ -108,8 +100,16 @@ export default {
   }
 
   .form-input__error {
-    text-align: start;
     color: red;
+    text-align: start;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 </style>

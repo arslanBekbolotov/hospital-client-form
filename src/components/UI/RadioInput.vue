@@ -19,7 +19,7 @@
       <label :for="'radioInput' + index">{{ option.label }}</label>
     </div>
     <span
-      v-if="$v.selectedGender.$dirty && !$v.selectedGender.required"
+      v-if="validation?.[name]?.$dirty && !validation?.[name]?.required"
       class="radio-input__error"
     >
       {{ errorMessage }}
@@ -33,7 +33,7 @@ export default {
   props: {
     errorMessage: {
       type: String,
-      default: "Пожалуйста, выберите значение",
+      default: "Это поле обязательное, выберите значение",
     },
     options: {
       type: Array,
@@ -46,6 +46,9 @@ export default {
     isRequired: {
       type: Boolean,
       default: false,
+    },
+    validation: {
+      type: Object,
     },
   },
   data() {
@@ -71,14 +74,13 @@ export default {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  font-weight: bold;
 
   &__title {
-    font-weight: bold;
     margin-bottom: 5px;
   }
 
   label {
-    font-weight: bold;
     margin-bottom: 5px;
   }
 

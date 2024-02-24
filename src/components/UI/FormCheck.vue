@@ -5,15 +5,16 @@
       {{ label }}
       <span v-if="isRequired" class="checkbox__star">*</span>
     </label>
-    <p v-if="$v.isChecked.$error" class="invalid-feedback">
+    <p
+      v-if="validate?.[name]?.$error && !validate?.[name]?.required"
+      class="invalid-feedback"
+    >
       {{ errorMessage }}
     </p>
   </div>
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
-
 export default {
   props: {
     label: {
@@ -32,20 +33,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    validate: {
+      type: Object,
+    },
   },
   data() {
     return {
       isChecked: false,
     };
   },
-  validations: {
-    isChecked: {
-      required,
-    },
-  },
   methods: {
     updateValue() {
-      this.$v.isChecked.$touch();
       this.$emit("change", this.name, this.isChecked);
     },
   },
@@ -54,10 +52,11 @@ export default {
 
 <style lang="scss" scoped>
 .checkbox {
+  font-weight: bold;
+
   label {
     display: flex;
     align-items: center;
-    font-weight: bold;
   }
 
   .is-invalid {
