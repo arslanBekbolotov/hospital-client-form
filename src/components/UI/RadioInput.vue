@@ -73,8 +73,8 @@ export default {
 .radio-input {
   display: flex;
   align-items: flex-start;
-  flex-direction: column;
   font-weight: bold;
+  flex-wrap: wrap;
 
   &__title {
     margin-bottom: 5px;

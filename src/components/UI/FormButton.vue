@@ -1,7 +1,7 @@
 <template>
   <button class="button">
     <span class="button__text">{{ buttonText }}</span>
-    <img class="button__icon" src="@/assets/icons8-send-96.png" alt="" />
+    <slot class="button__icon" />
   </button>
 </template>
 

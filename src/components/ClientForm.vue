@@ -98,7 +98,20 @@
         />
       </div>
     </div>
-    <form-button button-text="Создать" />
+    <form-button class="form-button" button-text="Создать">
+      <img class="button__icon" src="@/assets/icons8-send-96.png" alt="send" />
+    </form-button>
+    <form-alert
+      v-if="!$v.$error"
+      :visible="visible"
+      message="Пользователь успешно создан"
+    />
+    <form-alert
+      v-if="$v.$error"
+      :visible="visible"
+      :error="true"
+      message="Заполните все обязательные поля"
+    />
   </form>
 </template>
 
@@ -111,10 +124,12 @@ import FormCheck from "@/components/UI/FormCheck.vue";
 import RadioInput from "@/components/UI/RadioInput.vue";
 import { required, minLength } from "vuelidate/lib/validators";
 import FormButton from "@/components/UI/FormButton.vue";
+import FormAlert from "@/components/FormAlert.vue";
 
 export default {
   name: "App",
   components: {
+    FormAlert,
     FormButton,
     RadioInput,
     FormCheck,
@@ -190,7 +205,7 @@ export default {
           value: "Вод. удостоверение",
         },
       ],
-      successMsg: false,
+      visible: false,
     };
   },
   validations: {
@@ -213,10 +228,10 @@ export default {
     },
     checkResult() {
       this.$v.$touch();
-      if (!this.$v.$error) {
-        alert("Валидация прошла успешно");
-        this.successMsg = true;
-      }
+      this.visible = true;
+      setTimeout(() => {
+        this.visible = false;
+      }, 5000);
     },
   },
 };
@@ -230,6 +245,7 @@ export default {
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .main-form,
@@ -245,5 +261,12 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   row-gap: 10px;
+}
+
+.form-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
